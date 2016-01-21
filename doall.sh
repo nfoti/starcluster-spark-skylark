@@ -16,7 +16,7 @@ sudo apt-get -y update; sudo apt-get -y upgrade
 sudo apt-get -y install nfs-kernel-server nfs-common portmap
 sudo ln -s /etc/init.d/nfs-kernel-server /etc/init.d/nfs
 sudo ln -s /lib/systemd/system/nfs-kernel-server.service /lib/systemd/system/nfs.service
-sudo apt-get -y install python-scipy python-numpy
+#sudo apt-get -y install python-scipy python-numpy
 mkdir starclustersetup
 cp scimage_13.04.py starclustersetup
 cd starclustersetup
@@ -37,6 +37,9 @@ cd sge
 tar -xvsf sge.tar.gz
 sudo cp -r sge6-fresh /opt
 cd
+
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
 rm -r sge starclustersetup
 rm sge.tar.gz scimage_13.04.py
 rm doall.sh

@@ -63,6 +63,15 @@ GRID_SCHEDULER_GIT = 'git://github.com/jtriley/gridscheduler.git'
 CLOUDERA_ARCHIVE_KEY = 'http://archive.cloudera.com/debian/archive.key'
 CLOUDERA_APT = 'http://archive.cloudera.com/debian squeeze-cdh3u5 contrib'
 PPAS = ["ppa:staticfloat/julia-deps", "ppa:staticfloat/julianightlies"]
+
+PKGS = "git vim mercurial subversion cvs encfs keychain screen tmux zsh "
+PKGS += "ksh csh tcsh ec2-api-tools ec2-ami-tools mysql-server "
+PKGS += "mysql-client nginx apache2 libapache2-mod-wsgi sysv-rc-conf "
+PKGS += "pssh emacs irssi htop vim-scripts mosh default-jdk mpich2 xvfb "
+PKGS += "openmpi-bin libopenmpi-dev libopenblas-dev liblapack-dev julia"
+PKGS += "ack fish silversearcher-ag"
+
+
 STARCLUSTER_MOTD = """\
 #!/bin/sh
 cat<<"EOF"
@@ -490,7 +499,8 @@ def main():
     install_build_utils()
     #install_nfs()
     install_default_packages()
-    install_python_packages()
+    # Installing conda to manage python
+    #install_python_packages()
     # Only use these to build the packages locally
     # These should normally be installed from the PPAs
     #install_openblas()
@@ -498,8 +508,8 @@ def main():
     #install_julia()
     install_java()
     install_gridscheduler()
-    install_condor()
-    install_hadoop()
+    #install_condor()
+    #install_hadoop()
     configure_init()
     cleanup()
 

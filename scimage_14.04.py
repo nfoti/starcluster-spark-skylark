@@ -62,15 +62,16 @@ BUILD_UTILS_PKGS += "python-distutils-extra gfortran unzip unace cdbs patch "
 GRID_SCHEDULER_GIT = 'git://github.com/jtriley/gridscheduler.git'
 CLOUDERA_ARCHIVE_KEY = 'http://archive.cloudera.com/debian/archive.key'
 CLOUDERA_APT = 'http://archive.cloudera.com/debian squeeze-cdh3u5 contrib'
-PPAS = ["ppa:staticfloat/julia-deps", "ppa:staticfloat/julianightlies"]
+PPAS = []
 
 PKGS = "git vim mercurial subversion cvs encfs keychain screen tmux zsh "
 PKGS += "ksh csh tcsh ec2-api-tools ec2-ami-tools mysql-server "
 PKGS += "mysql-client nginx apache2 libapache2-mod-wsgi sysv-rc-conf "
 PKGS += "pssh emacs irssi htop vim-scripts mosh default-jdk mpich2 xvfb "
-PKGS += "openmpi-bin libopenmpi-dev libopenblas-dev liblapack-dev julia"
-PKGS += "ack fish silversearcher-ag"
-
+PKGS += "openmpi-bin libopenmpi-dev libopenblas-dev liblapack-dev "
+PKGS += "ack-grep fish silversearcher-ag dos2unix gdb cmake"
+#PPAS = ["ppa:staticfloat/julia-deps", "ppa:staticfloat/julianightlies"]
+#PKGS += "julia"
 
 STARCLUSTER_MOTD = """\
 #!/bin/sh
@@ -451,17 +452,19 @@ mysql-server mysql-server/root_password_again seen true
     mysqlpreseed.close()
     run_command('debconf-set-selections < %s' % mysqlpreseed.name)
     run_command('rm %s' % mysqlpreseed.name)
-    pkgs = "git vim mercurial subversion cvs encfs keychain screen tmux zsh "
-    pkgs += "ksh csh tcsh ec2-api-tools ec2-ami-tools mysql-server "
-    pkgs += "mysql-client nginx apache2 libapache2-mod-wsgi sysv-rc-conf "
-    pkgs += "pssh emacs irssi htop vim-scripts mosh default-jdk mpich2 xvfb "
-    pkgs += "openmpi-bin libopenmpi-dev libopenblas-dev liblapack-dev julia"
-    apt_install(pkgs)
+    #pkgs = "git vim mercurial subversion cvs encfs keychain screen tmux zsh "
+    #pkgs += "ksh csh tcsh ec2-api-tools ec2-ami-tools mysql-server "
+    #pkgs += "mysql-client nginx apache2 libapache2-mod-wsgi sysv-rc-conf "
+    #pkgs += "pssh emacs irssi htop vim-scripts mosh default-jdk mpich2 xvfb "
+    #pkgs += "openmpi-bin libopenmpi-dev libopenblas-dev liblapack-dev julia"
+    # List of packages defined above
+    apt_install(PKGS)
 
 
 def configure_init():
-    scripts = ['nfs-kernel-server', 'hadoop', 'condor', 'apache', 'mysql',
-               'nginx']
+    #scripts = ['nfs-kernel-server', 'hadoop', 'condor', 'apache', 'mysql',
+    #           'nginx']
+    scripts = ['nfs-kernel-server', 'apache', 'mysql', 'nginx']
     for script in scripts:
         run_command('find /etc/rc* -iname \*%s\* -delete' % script)
 
@@ -469,11 +472,13 @@ def configure_init():
 def cleanup():
     run_command('rm -rf /run/resolvconf')
     run_command('rm -f /etc/mtab')
-    run_command('rm -rf /root/*')
-    exclude = ['/root/.bashrc', '/root/.profile', '/root/.bash_aliases']
-    for dot in glob.glob("/root/.*"):
-        if dot not in exclude:
-            run_command('rm -rf %s' % dot)
+    # Don't do this here b/c we may want to install more stuff after this
+    # script finishes
+    #run_command('rm -rf /root/*')
+    #exclude = ['/root/.bashrc', '/root/.profile', '/root/.bash_aliases']
+    #for dot in glob.glob("/root/.*"):
+    #    if dot not in exclude:
+    #        run_command('rm -rf %s' % dot)
     for path in glob.glob('/usr/local/src/*'):
         if os.path.isdir(path):
             shutil.rmtree(path)
@@ -498,7 +503,10 @@ def main():
     upgrade_packages()
     install_build_utils()
     #install_nfs()
+
+    # Turn this back on
     install_default_packages()
+
     # Installing conda to manage python
     #install_python_packages()
     # Only use these to build the packages locally
@@ -506,12 +514,16 @@ def main():
     #install_openblas()
     #install_openmpi()
     #install_julia()
+
     install_java()
     install_gridscheduler()
+
     #install_condor()
     #install_hadoop()
     configure_init()
-    cleanup()
+
+    # This was messing things up, using external script now.
+    #cleanup()
 
 if __name__ == '__main__':
     main()
